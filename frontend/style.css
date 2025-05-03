@@ -1,0 +1,236 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: var(--dark-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.status-bar {
+    background-color: var(--light-color);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+}
+
+.status-dot.connected {
+    background-color: var(--success-color);
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 15px;
+    max-width: 350px;
+    margin: 0 auto 30px;
+}
+
+.control-btn {
+    position: relative;
+    padding: 25px;
+    border: none;
+    background: white;
+    color: var(--dark-color);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--light-color);
+}
+
+.control-btn.forward {
+    grid-column: 2;
+    grid-row: 1;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.control-btn.left {
+    grid-column: 1;
+    grid-row: 2;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.control-btn.stop {
+    grid-column: 2;
+    grid-row: 2;
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.control-btn.right {
+    grid-column: 3;
+    grid-row: 2;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.control-btn.backward {
+    grid-column: 2;
+    grid-row: 3;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.logs {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.timestamp {
+    color: var(--secondary-color);
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.success {
+    color: var(--success-color);
+}
+
+.error {
+    color: var(--danger-color);
+}
+
+.settings {
+    margin-top: 30px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.settings h2 {
+    margin-bottom: 15px;
+    color: var(--dark-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--dark-color);
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .controls {
+        max-width: 280px;
+        gap: 10px;
+    }
+
+    .control-btn {
+        padding: 20px;
+        font-size: 20px;
+    }
+}

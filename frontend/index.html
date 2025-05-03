@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voiture Lego</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Contrôle de Voiture Lego</h1>
+            <p>Interface de pilotage</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="connection-status"></div>
+                <span id="connection-text">Non connecté</span>
+            </div>
+            <div class="status-indicator">
+                <span id="last-command">Aucune commande</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="forward" class="control-btn forward" onclick="sendCommand('FORWARD')">
+                &#9650;
+            </button>
+            <button id="left" class="control-btn left" onclick="sendCommand('LEFT')">
+                &#9664;
+            </button>
+            <button id="stop" class="control-btn stop" onclick="sendCommand('STOP')">
+                &#9632;
+            </button>
+            <button id="right" class="control-btn right" onclick="sendCommand('RIGHT')">
+                &#9654;
+            </button>
+            <button id="backward" class="control-btn backward" onclick="sendCommand('BACKWARD')">
+                &#9660;
+            </button>
+        </div>
+    <script src="script.js"></script> 
+</body>
+</html>
