@@ -112,6 +112,31 @@ function checkStatus() {
         });
 }
 
+function fetchCommandCounts() {
+    fetch('/api/commandCounts')
+        .then(response => response.json())
+        .then(data => {
+            const commandList = document.getElementById('commandList');
+            commandList.innerHTML = ''; // Effacer la liste existante
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.command}: ${item.count}`;
+                commandList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des données :', error);
+            const commandList = document.getElementById('commandList');
+            commandList.innerHTML = ''; // Effacer la liste existante
+            const p = document.createElement('p');
+            p.textContent = 'Erreur lors de la récupération des données.';
+            commandList.appendChild(p);
+        });
+}
+
 // Vérifier le statut toutes les 3 secondes
 setInterval(checkStatus, 3000);
+setInterval(fetchCommandCounts, 3000);
+
 checkStatus(); // Vérifier immédiatement au chargement
+fetchCommandCounts();

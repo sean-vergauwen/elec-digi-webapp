@@ -4,6 +4,8 @@ const http = require('http');
 const net = require('net');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config(); // Load environment variables
 
 
 // Configuration du serveur
@@ -22,6 +24,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let picoConnection = null;
 let lastCommandTime = Date.now();
 const TIMEOUT_INTERVAL = 5000; // 5 secondes
+
+// Connexion à la DB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Schéma mongoose
+const commandSchema = new mongoose.Schema({
+  command: String,
+  count: { type: Number, default: 0 },
+});
+
+const CommandCount = mongoose.model('CommandCount', commandSchema);
 
 // Créer un serveur TCP
 tcpServer.on('connection', (socket) => {
@@ -72,7 +88,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Endpoint pour envoyer une commande au robot
-app.post('/api/command', (req, res) => {
+app.post('/api/command', async (req, res) => { 
     const { command } = req.body;
 
     if (!command) {
@@ -97,11 +113,35 @@ app.post('/api/command', (req, res) => {
 
         console.log(`Commande "${command}" envoyée au Pico W`);
         res.json({ success: true, command });
+
+        // Mettre à jour la table MongoDB
+        let commandCount = await CommandCount.findOne({ command: command });
+
+        if (commandCount) {
+        commandCount.count++;
+        await commandCount.save();
+        } else {
+        const newCommandCount = new CommandCount({ command: command, count: 1 });
+        await newCommandCount.save();
+        }
+
     } catch (error) {
         console.error('Erreur lors de l\'envoi de la commande:', error);
         res.status(500).json({ error: 'Erreur lors de l\'envoi de la commande' });
     }
 });
+
+// Endpoint pour récupérer les counter des commandes
+app.get('/api/commandCounts', async (req, res) => {
+  try {
+    const commandCounts = await CommandCount.find(); // Récupérer tous les documents
+    res.json(commandCounts); // Renvoyer les données au format JSON
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données de commande :', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des données de commande' });
+  }
+});
+
 
 // Route pour la page d'accueil - peut servir à tester si l'API fonctionne
 app.get('/', (req, res) => {

@@ -189,6 +189,42 @@ h1 {
     margin-bottom: 15px;
 }
 
+#commandList {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#commandList li {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#commandList li:last-child {
+    border-bottom: none;
+}
+
+#commandList li span {
+    font-weight: bold;
+    color: var(--dark-color);
+}
+
+#commandList li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+#commandList li:nth-child(odd) {
+    background-color: #e0e0e0;
+}
+
 label {
     display: block;
     margin-bottom: 5px;
