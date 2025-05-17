@@ -1,7 +1,7 @@
 import network
 import socket
 import time
-from machine import Pin
+from machine import Pin, time_pulse_us, Timer
 
 # Configuration Wi-Fi
 SSID = "Sean"
@@ -13,18 +13,50 @@ BACKEND_PORT = 50903
 led = Pin("LED", Pin.OUT)
 led.off()
 
+timer_interval_ms = 100  # Set to 100 for 0.1-second intervals
+timer = Timer()
+
 # Moteur haut bas
-IN1 = Pin(12, Pin.OUT)
-IN2 = Pin(13, Pin.OUT)
+IN1 = Pin(12, Pin.OUT)  # Broche de direction 1 du moteur droit
+IN2 = Pin(13, Pin.OUT)  # Broche de direction 2 du moteur droit
 # Moteur gauche droite
-IN3 = Pin(4, Pin.OUT)
-IN4 = Pin(5, Pin.OUT)
+IN3 = Pin(4, Pin.OUT)  # Broche de direction 1 du moteur gauche
+IN4 = Pin(5, Pin.OUT)  # Broche de direction 2 du moteur gauche
 
 GOING_FORWARD = False
 GOING_BACKWARD = False
-
 GOING_LEFT = False
 GOING_RIGHT = False
+
+echo = Pin(7, Pin.IN, Pin.PULL_DOWN) 
+trig = Pin(8, Pin.OUT)
+echo_timeout_us=500*2*30
+
+flag = False
+
+def timer_callback(timer):
+    measure_distance()
+
+def measure_distance():
+    global trig, echo, flag, GOING_FORWARD
+    trig.value(0) # Stabilize the sensor
+    time.sleep_us(2)
+    trig.value(1)
+    # Send a 10us pulse.
+    time.sleep_us(2)
+    trig.value(0)
+    
+    pulse_time = time_pulse_us(echo, 1, echo_timeout_us)
+   
+    if ((pulse_time * 100 // 582) <= 200) and ((pulse_time * 100 // 582) != -1):
+        print("ATTENTION")
+        if GOING_FORWARD:
+            GOING_FORWARD = False 
+            IN1.off()
+            IN2.off()
+            flag = True
+    else:
+        flag = False
 
 # Initialisation des broches des moteurs
 def init_motors():
@@ -34,11 +66,11 @@ def init_motors():
     # Gauche droite arrêté
     IN3.off()
     IN4.off()
-    print("Moteurs initialisés")
 
+# Fonction pour contrôler les mouvements de la voiture
 def move_car(direction):
-    global GOING_FORWARD, GOING_BACKWARD, GOING_LEFT, GOING_RIGHT
-    if direction == "haut":
+    global GOING_FORWARD, GOING_BACKWARD, GOING_LEFT, GOING_RIGHT, flag
+    if direction == "haut" and flag == False:
         if GOING_FORWARD:
             GOING_FORWARD = False    
             IN1.off()
@@ -47,8 +79,8 @@ def move_car(direction):
         else:
             GOING_FORWARD = True
             GOING_BACKWARD = False
-            IN1.on()
-            IN2.off()
+            IN1.off()
+            IN2.on()
             print("Avancer")
         
     if direction == "bas":
@@ -60,8 +92,9 @@ def move_car(direction):
         else:
             GOING_BACKWARD = True
             GOING_FORWARD = False
-            IN1.off()
-            IN2.on()
+            flag = False
+            IN1.on()
+            IN2.off()
             print("Reculer")
         
     if direction == "gauche":
@@ -128,7 +161,7 @@ def connect_wifi():
         return None
     
 def connect_to_server():
-    """Établit une connexion TCP avec le serveur et traite les commandes"""
+    """Établit une connexion TCP avec le serveur et traite les commandes"""    
     while True:
         try:
             print(f"Tentative de connexion au serveur: {BACKEND_IP}:{BACKEND_PORT}")
@@ -188,6 +221,8 @@ def main():
     if not private_ip:
         print("Impossible de continuer sans connexion Wi-Fi")
         return
+    
+    timer.init(freq=1000 / timer_interval_ms, mode=Timer.PERIODIC, callback=timer_callback)
     
     connect_to_server()
      
