@@ -229,26 +229,27 @@ class NetworkManager:
     
     def connect_wifi(self, max_attempts=15):
         """Connecte au Wi-fi"""
-        self.wlan.active(True)
+        while True:
+            self.wlan.active(True)
+            
+            print(f"Connexion au réseau : {Config.WIFI_SSID}...")
+            self.wlan.connect(Config.WIFI_SSID, Config.WIFI_PASSWORD)
+            
+            # On attend que la connexion se fasse
+            attempts = 0
+            while attempts < max_attempts:
+                if self.wlan.status() == network.STAT_GOT_IP:
+                    ip_address = self.wlan.ifconfig()[0]
+                    print(f"Connecté! Adresse IP: {ip_address}")
+                    return True
+                    
+                attempts += 1
+                print(f"En attente de connexion... ({attempts}/{max_attempts})")
+                time.sleep(1)
+            
+            print(f"Connexion au Wi-fi ratée, retentative dans {Config.RECONNECT_DELAY_SEC}")
+            time.sleep(Config.RECONNECT_DELAY_SEC)
         
-        print(f"Connexion au réseau : {Config.WIFI_SSID}...")
-        self.wlan.connect(Config.WIFI_SSID, Config.WIFI_PASSWORD)
-        
-        # On attend que la connexion se fasse
-        attempts = 0
-        while attempts < max_attempts:
-            if self.wlan.status() == network.STAT_GOT_IP:
-                ip_address = self.wlan.ifconfig()[0]
-                print(f"Connecté! Adresse IP: {ip_address}")
-                return True
-                
-            attempts += 1
-            print(f"En attente de connexion... ({attempts}/{max_attempts})")
-            time.sleep(1)
-        
-        print("Connexion au Wi-fi ratée")
-        return False
-    
     def connect_to_server(self):
         """Etablit une connexion TCP avec le serveur et lance le traitement des commandes"""
         while True:
@@ -305,9 +306,7 @@ def main():
         network_mgr = NetworkManager(car)
         
         # Se connecte au wifi
-        if not network_mgr.connect_wifi():
-            print("Connexion au Wi-fi non concluante")
-            return
+        network_mgr.connect_wifi()
         
         # Lance le timer de mesure de distances
         car.start_distance_monitoring()
